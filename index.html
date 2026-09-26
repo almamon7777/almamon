@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المأمــــــون للتجــــــارة</title>
+
+<!-- استدعاء خط Cairo من Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ==================== 1. التنسيقات العامة (CSS) ==================== */
+• {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+font-family: 'Cairo', sans-serif;
+}
+
+body {
+background-color: #f4f6f9;
+color: #333;
+padding-bottom: 80px;
+}
+
+header {
+background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+color: #fff;
+text-align: center;
+padding: 30px 15px;
+box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+header h1 {
+font-size: 2.2rem;
+margin-bottom: 8px;
+font-weight: 800;
+}
+
+header p {
+font-size: 1rem;
+opacity: 0.9;
+}
+
+/* شريط التصنيفات */
+.categories-wrapper {
+background: #fff;
+padding: 15px 10px;
+box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+position: sticky;
+top: 0;
+z-index: 100;
+}
+
+.categories {
+display: flex;
+justify-content: center;
+gap: 10px;
+overflow-x: auto;
+white-space: nowrap;
+padding-bottom: 5px;
+}
+
+.category-btn {
+background: #eef2f5;
+border: none;
+padding: 8px 18px;
+border-radius: 20px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s ease;
+color: #555;
+}
+
+.category-btn.active, .category-btn:hover {
+background: #1e3c72;
+color: #fff;
+}
+
+/* شبكة المنتجات */
+.container {
+max-width: 1200px;
+margin: 20px auto;
+padding: 0 15px;
+}
+
+.products-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+gap: 20px;
+}
+
+.product-card {
+background: #fff;
+border-radius: 12px;
+overflow: hidden;
+box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+display: flex;
+flex-direction: column;
+}
+
+.product-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.product-image {
+width: 100%;
+height: 200px;
+object-fit: cover;
+background-color: #eee;
+}
+
+.product-info {
+padding: 15px;
+display: flex;
+flex-direction: column;
+flex-grow: 1;
+}
+
+.product-title {
+font-size: 1.1rem;
+font-weight: 700;
+margin-bottom: 5px;
+color: #222;
+}
+
+.product-desc {
+font-size: 0.85rem;
+color: #777;
+margin-bottom: 12px;
+}
+
+.product-price {
+font-weight: 700;
+color: #1e3c72;
+margin-bottom: 15px;
+font-size: 1rem;
+}
+
+.add-to-cart-btn {
+background: #27ae60;
+color: #fff;
+border: none;
+padding: 10px;
+border-radius: 8px;
+font-weight: 600;
+cursor: pointer;
+margin-top: auto;
+transition: background 0.3s ease;
+}
+
+.add-to-cart-btn:hover {
+background: #219150;
+}
+
+/* زر السلة العائم */
+.floating-cart-btn {
+position: fixed;
+bottom: 20px;
+left: 20px;
+background: #1e3c72;
+color: #fff;
+border: none;
+padding: 12px 20px;
+border-radius: 30px;
+font-size: 1rem;
+font-weight: 700;
+box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+cursor: pointer;
+z-index: 999;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.cart-badge {
+background: #e74c3c;
+color: #fff;
+padding: 2px 8px;
+border-radius: 50%;
+font-size: 0.85rem;
+}
+
+/* نافذة السلة (Modal) */
+.cart-modal {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0,0,0,0.5);
+z-index: 1000;
+justify-content: center;
+align-items: center;
+}
+
+.cart-modal.open {
+display: flex;
+}
+
+.cart-content {
+background: #fff;
+width: 90%;
+max-width: 500px;
+max-height: 85vh;
+border-radius: 12px;
+padding: 20px;
+display: flex;
+flex-direction: column;
+box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+}
+
+.cart-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid #eee;
+padding-bottom: 10px;
+margin-bottom: 15px;
+}
+
+.cart-header-title {
+font-weight: 700;
+font-size: 1.2rem;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.close-cart {
+background: none;
+border: none;
+font-size: 1.5rem;
+cursor: pointer;
+color: #888;
+}
+
+.cart-items {
+overflow-y: auto;
+flex-grow: 1;
+margin-bottom: 15px;
+}
+
+.cart-item {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 10px 0;
+border-bottom: 1px solid #f9f9f9;
+}
+
+.cart-item-title {
+font-weight: 600;
+font-size: 0.95rem;
+}
+
+.cart-item-controls {
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.qty-btn {
+background: #eee;
+border: none;
+width: 25px;
+height: 25px;
+border-radius: 5px;
+cursor: pointer;
+font-weight: bold;
+}
+
+.cart-empty-box {
+text-align: center;
+padding: 30px 10px;
+color: #777;
+}
+
+.cart-empty-icon {
+font-size: 3rem;
+margin-bottom: 10px;
+}
+
+.browse-shop-btn {
+margin-top: 15px;
+background: #1e3c72;
+color: #fff;
+border: none;
+padding: 8px 16px;
+border-radius: 6px;
+cursor: pointer;
+}
+
+.cart-summary {
+display: flex;
+justify-content: space-between;
+margin-bottom: 15px;
+font-weight: 700;
+}
+
+.clear-cart-link {
+color: #e74c3c;
+background: none;
+border: none;
+cursor: pointer;
+text-decoration: underline;
+font-size: 0.85rem;
+}
+
+.cart-customer-fields {
+display: flex;
+flex-direction: column;
+gap: 10px;
+margin-bottom: 15px;
+}
+
+.cart-input {
+width: 100%;
+padding: 10px;
+border: 1px solid #ccc;
+border-radius: 6px;
+font-size: 0.9rem;
+}
+
+.send-whatsapp-btn {
+background: #25D366;
+color: #fff;
+border: none;
+padding: 12px;
+border-radius: 8px;
+font-weight: 700;
+font-size: 1rem;
+cursor: pointer;
+width: 100%;
+text-align: center;
+}
+
+/* Toast التنبيه المنبثق */
+.toast-notice {
+position: fixed;
+top: -60px;
+left: 50%;
+transform: translateX(-50%);
+background: #333;
+color: #fff;
+padding: 10px 20px;
+border-radius: 20px;
+font-size: 0.9rem;
+z-index: 1001;
+transition: top 0.4s ease;
+display: flex;
+align-items: center;
+gap: 8px;
+box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.toast-notice.show {
+top: 20px;
+}
+
+.toast-badge {
+background: #27ae60;
+color: #fff;
+width: 18px;
+height: 18px;
+border-radius: 50%;
+display: inline-flex;
+justify-content: center;
+align-items: center;
+font-size: 0.75rem;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>المأمــــــون للتجــــــارة</h1>
+<p>تصفح أحدث المنتجات واطلب مباشرة عبر الواتساب</p>
+</header>
+
+<!-- شريط التصنيفات -->
+<div class="categories-wrapper">
+<div class="categories">
+<button class="category-btn active" data-filter="الكل">الكل</button>
+<button class="category-btn" data-filter="مخدات">مخدات</button>
+<button class="category-btn" data-filter="أدوات ستائر">أدوات ستائر</button>
+<button class="category-btn" data-filter="أدوات نجارة">أدوات نجارة</button>
+<button class="category-btn" data-filter="منتجات متنوعة">منتجات متنوعة</button>
+</div>
+</div>
+
+<div class="container">
+<div class="products-grid">
+
+<!-- قسم المخدات -->
+<div class="product-card" data-category="مخدات">
+<img src="https://i.postimg.cc/XYCFqckV/01.jpg" class="product-image" alt="مخدة مارينا">
+<div class="product-info">
+<div class="product-title">مخدة مارينا</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="مخدات">
+<img src="https://i.postimg.cc/QxVcGrBP/02.jpg" class="product-image" alt="مخدات جلاكسي ورلد">
+<div class="product-info">
+<div class="product-title">مخدات جلاكسي ورلد</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="مخدات">
+<img src="https://i.postimg.cc/Gh9vw1BM/03.jpg" class="product-image" alt="منتج رقم 3">
+<div class="product-info">
+<div class="product-title">منتج رقم 3</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="مخدات">
+<img src="https://i.postimg.cc/SN5Cmt85/04.jpg" class="product-image" alt="مخدة فايف ستارز">
+<div class="product-info">
+<div class="product-title">مخدة فايف ستارز</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="مخدات">
+<img src="https://i.postimg.cc/pLrvJq6Y/05.jpg" class="product-image" alt="منتج رقم 5">
+<div class="product-info">
+<div class="product-title">منتج رقم 5</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="مخدات">
+<img src="https://i.postimg.cc/138xq48z/06.jpg" class="product-image" alt="منتج رقم 6">
+<div class="product-info">
+<div class="product-title">منتج رقم 6</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<!-- قسم أدوات ستائر -->
+<div class="product-card" data-category="أدوات ستائر">
+<img src="https://i.postimg.cc/Y0PGqh4g/07.jpg" class="product-image" alt="منتج رقم 7">
+<div class="product-info">
+<div class="product-title">منتج رقم 7</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="أدوات ستائر">
+<img src="https://i.postimg.cc/fWdJxT0p/08.jpg" class="product-image" alt="منتج رقم 8">
+<div class="product-info">
+<div class="product-title">منتج رقم 8</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="أدوات ستائر">
+<img src="https://i.postimg.cc/jq3Jhk8q/09.jpg" class="product-image" alt="منتج رقم 9">
+<div class="product-info">
+<div class="product-title">منتج رقم 9</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="أدوات ستائر">
+<img src="https://i.postimg.cc/15gV7c2S/10.jpg" class="product-image" alt="منتج رقم 10">
+<div class="product-info">
+<div class="product-title">منتج رقم 10</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<!-- قسم أدوات نجارة -->
+<div class="product-card" data-category="أدوات نجارة">
+<img src="https://i.postimg.cc/yYJ3pX5p/11.jpg" class="product-image" alt="منتج رقم 11">
+<div class="product-info">
+<div class="product-title">منتج رقم 11</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="أدوات نجارة">
+<img src="https://i.postimg.cc/BQdLrPfW/12.jpg" class="product-image" alt="منتج رقم 12">
+<div class="product-info">
+<div class="product-title">منتج رقم 12</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="أدوات نجارة">
+<img src="https://i.postimg.cc/6574bLSS/13.jpg" class="product-image" alt="منتج رقم 13">
+<div class="product-info">
+<div class="product-title">منتج رقم 13</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="أدوات نجارة">
+<img src="https://i.postimg.cc/xTWJwNVY/14.jpg" class="product-image" alt="منتج رقم 14">
+<div class="product-info">
+<div class="product-title">منتج رقم 14</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<!-- قسم منتجات متنوعة -->
+<div class="product-card" data-category="منتجات متنوعة">
+<img src="https://i.postimg.cc/DwLJnf7J/15.jpg" class="product-image" alt="منتج رقم 15">
+<div class="product-info">
+<div class="product-title">منتج رقم 15</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="منتجات متنوعة">
+<img src="https://i.postimg.cc/CLWB3npg/16.jpg" class="product-image" alt="منتج رقم 16">
+<div class="product-info">
+<div class="product-title">منتج رقم 16</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="منتجات متنوعة">
+<img src="https://i.postimg.cc/LXChNnVd/17.jpg" class="product-image" alt="منتج رقم 17">
+<div class="product-info">
+<div class="product-title">منتج رقم 17</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="منتجات متنوعة">
+<img src="https://i.postimg.cc/zGZvtmTL/18.jpg" class="product-image" alt="منتج رقم 18">
+<div class="product-info">
+<div class="product-title">منتج رقم 18</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="منتجات متنوعة">
+<img src="https://i.postimg.cc/DzcS4CJ3/19.jpg" class="product-image" alt="منتج رقم 19">
+<div class="product-info">
+<div class="product-title">منتج رقم 19</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="منتجات متنوعة">
+<img src="https://i.postimg.cc/7LN5JBG4/20.jpg" class="product-image" alt="منتج رقم 20">
+<div class="product-info">
+<div class="product-title">منتج رقم 20</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="منتجات متنوعة">
+<img src="https://i.postimg.cc/VvJvTm7v/21.jpg" class="product-image" alt="منتج رقم 21">
+<div class="product-info">
+<div class="product-title">منتج رقم 21</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="منتجات متنوعة">
+<img src="https://i.postimg.cc/C5R5tSvR/22.jpg" class="product-image" alt="منتج رقم 22">
+<div class="product-info">
+<div class="product-title">منتج رقم 22</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="منتجات متنوعة">
+<img src="https://i.postimg.cc/mgfkXx7t/23.jpg" class="product-image" alt="منتج رقم 23">
+<div class="product-info">
+<div class="product-title">منتج رقم 23</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="منتجات متنوعة">
+<img src="https://i.postimg.cc/B66nLJfT/24.jpg" class="product-image" alt="منتج رقم 24">
+<div class="product-info">
+<div class="product-title">منتج رقم 24</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="منتجات متنوعة">
+<img src="https://i.postimg.cc/gc13WTv2/25.jpg" class="product-image" alt="منتج رقم 25">
+<div class="product-info">
+<div class="product-title">منتج رقم 25</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+<div class="product-card" data-category="منتجات متنوعة">
+<img src="https://i.postimg.cc/Wpx0vHMP/26.jpg" class="product-image" alt="منتج رقم 26">
+<div class="product-info">
+<div class="product-title">منتج رقم 26</div>
+<div class="product-desc">وصف المنتج هنا</div>
+<div class="product-price">حسب الطلب</div>
+<button class="add-to-cart-btn">🛒 إضافة للسلة</button>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- Toast التنبيه المنبثق -->
+<div class="toast-notice" id="cartToast">
+<span class="toast-badge">✓</span>
+<span id="toastMessage">تمت إضافة المنتج إلى السلة بنجاح</span>
+</div>
+
+<!-- زر السلة العائم -->
+<button class="floating-cart-btn" id="openCartBtn" aria-label="عرض سلة التسوق">
+🛒 السلة <span class="cart-badge" id="cartCount">0</span>
+</button>
+
+<!-- نافذة عرض السلة -->
+<div class="cart-modal" id="cartModal">
+<div class="cart-content">
+<div class="cart-header">
+<div class="cart-header-title">
+<span>🛒 سلة التسوق</span>
+<span class="cart-badge" id="modalCartCount">0</span>
+</div>
+<button class="close-cart" id="closeCartBtn" aria-label="إغلاق السلة">×</button>
+</div>
+
+<div class="cart-items" id="cartItems"></div>
+
+<div id="cartFooterArea" style="display: none;">
+<div class="cart-summary">
+<span class="cart-summary-text" id="cartSummaryTotal">إجمالي القطع: 0</span>
+<button class="clear-cart-link" id="clearCartBtn">إفراغ السلة</button>
+</div>
+
+<div class="cart-customer-fields">
+<input type="text" id="cartCustomerName" class="cart-input" placeholder="اسم العميل (اختياري)">
+<input type="text" id="cartCustomerNotes" class="cart-input" placeholder="ملاحظات أو عنوان التوصيل (اختياري)">
+</div>
+
+<button class="send-whatsapp-btn" id="sendWhatsappBtn">
+💬 إرسال الطلب عبر الواتساب
+</button>
+</div>
+</div>
+</div>
+
+<!-- ==================== 2. البرمجة والتفاعل (JavaScript) ==================== -->
+<script>
+// جلب السلة المخزنة مسبقاً من التخزين المؤقت للمتصفح (Asset/Local Caching)
+let cart = JSON.parse(localStorage.getItem('almamoon_cart')) || [];
+const whatsappNumber = "967770000000"; // رقم الواتساب بالرمز الدولي بدون +
+
+// عناصر الواجهة
+const cartModal = document.getElementById('cartModal');
+const openCartBtn = document.getElementById('openCartBtn');
+const closeCartBtn = document.getElementById('closeCartBtn');
+const cartCount = document.getElementById('cartCount');
+const modalCartCount = document.getElementById('modalCartCount');
+const cartItemsContainer = document.getElementById('cartItems');
+const cartFooterArea = document.getElementById('cartFooterArea');
+const cartSummaryTotal = document.getElementById('cartSummaryTotal');
+const clearCartBtn = document.getElementById('clearCartBtn');
+const sendWhatsappBtn = document.getElementById('sendWhatsappBtn');
+const cartToast = document.getElementById('cartToast');
+
+// وظيفة حفظ السلة في التخزين المؤقت للمتصفح (Caching)
+function saveCartToCache() {
+localStorage.setItem('almamoon_cart', JSON.stringify(cart));
+}
+
+// 1. فلترة التصنيفات
+document.querySelectorAll('.category-btn').forEach(button => {
+button.addEventListener('click', () => {
+document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+button.classList.add('active');
+
+const filter = button.innerText.trim();
+const products = document.querySelectorAll('.product-card');
+
+products.forEach(product => {
+const category = product.getAttribute('data-category');
+if (filter === 'الكل' || category === filter) {
+product.style.display = 'flex';
+} else {
+product.style.display = 'none';
+}
+});
+});
+});
+
+// 2. إضافة إلى السلة
+document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+button.addEventListener('click', (e) => {
+const card = e.target.closest('.product-card');
+const title = card.querySelector('.product-title').innerText;
+
+const existingItem = cart.find(item => item.title === title);
+if (existingItem) {
+existingItem.qty += 1;
+} else {
+cart.push({ title: title, qty: 1 });
+}
+
+saveCartToCache(); // حفظ التغيير مؤقتاً
+updateCartUI();
+showToast(تمت إضافة "${title}" إلى السلة`);
+});
+});
+
+// 3. تحديث السلة والواجهة
+function updateCartUI() {
+const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+cartCount.innerText = totalQty;
+modalCartCount.innerText = totalQty;
+
+if (cart.length === 0) {
+cartItemsContainer.innerHTML = &lt;div class="cart-empty-box"&gt; &lt;div class="cart-empty-icon"&gt;🛍️&lt;/div&gt; &lt;div class="cart-empty-title"&gt;سلة التسوق فارغة&lt;/div&gt; &lt;div class="cart-empty-desc"&gt;لم تقم بإضافة أي منتجات للسلة بعد.&lt;/div&gt; &lt;button class="browse-shop-btn" onclick="cartModal.classList.remove('open')"&gt;تصفح المنتجات الآن&lt;/button&gt; &lt;/div&gt;;
+cartFooterArea.style.display = 'none';
+} else {
+cartItemsContainer.innerHTML = '';
+cart.forEach((item, index) => {
+const itemElement = document.createElement('div');
+itemElement.className = 'cart-item';
+itemElement.innerHTML = &lt;span class="cart-item-title"&gt;${item.title}</span>
+<div class="cart-item-controls">
+<button class="qty-btn" onclick="changeQty({item.qty}</span>
+<button class="qty-btn" onclick="changeQty(${index}, 1)"&gt;+&lt;/button&gt; &lt;/div&gt;;
+cartItemsContainer.appendChild(itemElement);
+});
+
+cartSummaryTotal.innerText = إجمالي القطع:${totalQty}`;
+cartFooterArea.style.display = 'block';
+}
+}
+
+// 4. تغيير الكميات
+function changeQty(index, change) {
+cart[index].qty += change;
+if (cart[index].qty <= 0) {
+cart.splice(index, 1);
+}
+saveCartToCache(); // حفظ التغيير مؤقتاً
+updateCartUI();
+}
+
+// 5. إفراغ السلة
+clearCartBtn.addEventListener('click', () => {
+cart = [];
+saveCartToCache(); // تحديث التخزين المؤقت
+updateCartUI();
+});
+
+// 6. فتح وإغلاق السلة
+openCartBtn.addEventListener('click', () => cartModal.classList.add('open'));
+closeCartBtn.addEventListener('click', () => cartModal.classList.remove('open'));
+
+// 7. إرسال الطلب عبر الواتساب
+sendWhatsappBtn.addEventListener('click', () => {
+if (cart.length === 0) return;
+
+const customerName = document.getElementById('cartCustomerName').value.trim();
+const customerNotes = document.getElementById('cartCustomerNotes').value.trim();
+
+let message = *طلب جديد من المأمون للتجارة*\n\n;
+if (customerName) message += *العميل:* ${customerName}\n; if (customerNotes) message +=ملاحظات/العنوان:${customerNotes}\n;
+
+message += \n*تفاصيل الطلب:*\n;
+cart.forEach(item => {
+message += - ${item.title} (الكمية: ${item.qty})\n;
+});
+
+const encodedMessage = encodeURIComponent(message);
+window.open(https://wa.me/${whatsappNumber}?text=${encodedMessage}, '_blank');
+});
+
+// 8. إظهار الإشعارات (Toast)
+function showToast(msg) {
+const toastMessage = document.getElementById('toastMessage');
+toastMessage.innerText = msg;
+cartToast.classList.add('show');
+setTimeout(() => {
+cartToast.classList.remove('show');
+}, 2500);
+}
+
+// تهيئة أولية عند التحميل
+updateCartUI();
+</script>
+
+</body>
+</html>
